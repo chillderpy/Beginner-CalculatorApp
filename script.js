@@ -52,16 +52,11 @@ function calc(x, y, op){
 }
 
 function calculate(expr){
-    let contCalc = false;
-    if (numStack.length != 0) contCalc = true;
-
     if (expr.length == 0){
         return;
     }
-    else if ((!contCalc && expr[0] in PRECEDENCE) || expr[expr.length - 1] in PRECEDENCE){
-        display.textContent = "Error";
+    else if (expr[0] in PRECEDENCE || expr[expr.length - 1] in PRECEDENCE){
         ERROR = true;
-        clear();
         return;
     }
     
@@ -87,15 +82,9 @@ function calculate(expr){
                 numStack.push(res);
             }
             opStack.push(char);
-            contCalc = false;
         }
         else {
-            if (contCalc){
-                numStack[0] += char;
-            }
-            else {
-                num += char;
-            }
+            num += char;
         }
     }
 
@@ -136,14 +125,19 @@ button.forEach(button => {
                 display.textContent = 0;
                 break;
             case '=':
+                if (display.textContent == "Error" || display.textContent == 0){
+                    break;
+                }
                 let res = calculate(currentInput);
                 if (ERROR) {
                     display.textContent = "Error";
                     clear();
                     break;
                 }
+                res = format(res);
                 display.textContent = format(res);
-                currentInput = "";
+                clear();
+                currentInput = res.toString();
                 break;
             default: 
                 if (display.textContent == 0 || display.textContent == "Error"){
